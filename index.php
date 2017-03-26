@@ -18,14 +18,24 @@ $valite = new valite();
 // $valite->toBlackWhite($num);
 // 
 // $valite->cutFont('code/0-new.png','fonts/0.png');
-for ($i=0; $i < 100; $i++) { 
-	# code...
-	$valite->setImage('codes/'.$i.'.png');
-	$valite->getMinHec();
-	$valite->toBlackWhite();
-	sleep(1);
-	$valite->cutFont();
-}
+// for ($i=0; $i < 100; $i++) { 
+// 	# code...
+// 	$valite->setImage('codes/'.$i.'.png');
+// 	$valite->getMinHec();
+// 	$valite->toBlackWhite();
+// 	sleep(1);
+// 	$valite->cutFont();
+// }
 
+// $valite->cutFont2();
+$fonts = scandir('fonts');
+
+// print_r($fonts);
+
+foreach ($fonts as $font) {
+	# code...
+	$valite->cutFont2('fonts/'.$font);
+	sleep(1);
+}
 
  ?>

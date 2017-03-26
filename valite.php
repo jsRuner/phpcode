@@ -4,8 +4,9 @@ class valite
 	protected $ImagePath;
 	protected $ImageName;
 	protected $ImageSize;
-	protected $ImageMinValue;
-	protected $BlackImagePath;
+	protected $ImageMinValue; //阀值。字体色的总和
+	protected $BlackImagePath; //黑白图片路径
+	protected $FontImagePath; //字体路径
 
 	public function setImage($Image)
 	{
@@ -118,6 +119,65 @@ class valite
 				imagefill( $dstim, 0, 0, $colBG );//加白色背景
 				imagecopyresized($dstim, $srcim, 0,0, $begin_point[0], 0,$end_point[0]-$begin_point[0],$srcsize[1],$end_point[0]-$begin_point[0],$srcsize[1]);
 				imagepng($dstim,'fonts/'.time().random_int(1, 50000).'.png');
+				$begin_set = $end_set = false;
+				$this->FontImagePath = 'fonts/'.time().random_int(1, 50000).'.png';
+				sleep(1);
+				$this->cutFont2($this->FontImagePath);
+			}
+		}
+	}
+
+	//横切。将fonts中横切放到fonts2
+	public function cutFont2($fontpath)
+	{
+		# code...
+		$srcim = imagecreatefrompng($fontpath);
+		$srcsize = getimagesize($fontpath); //0是宽 1是高
+
+		//起点与终点的状态
+		$begin_set = false;
+		$end_set = false;
+
+		$begin_point = [0,0]; 
+		$end_point = [0,0];
+
+		//i是高，j是横
+		for ($i=0; $i < $srcsize[1]; $i++) {
+			$temp = 0;
+			for ($j=0; $j < $srcsize[0]; $j++) { 
+				//获取颜色。
+				$rgb = imagecolorat($srcim,$j,$i);
+				$rgbarray = imagecolorsforindex($srcim, $rgb);
+
+				//如果是黑色。
+				if ($rgbarray['red'] == 0 && $rgbarray['green'] == 0 && $rgbarray['blue'] ==0) {
+					 //如果起点没设置。则设置这个点为起点。
+					if (!$begin_set) {
+					 	# code...
+					 	$begin_point= [0,$i];
+					 	$begin_set = true;
+					}
+					$temp++;
+					break;
+				}else{
+					continue;
+				}
+			}
+			//如果设置了起点。没设置终点。
+			if ($temp == 0 && $begin_set && !$end_set) {
+				# code...
+				$end_point =[0,$i];
+				$end_set = true;
+			}
+			//如果都设置了.则切割。
+			if ($begin_set && $end_set) {
+				$dstim = imagecreatetruecolor($srcsize[0],$end_point[1]-$begin_point[1]);
+				$colBG = imagecolorallocate($dstim, 255, 255, 255);//白色背景
+				imagefill( $dstim, 0, 0, $colBG );//加白色背景
+
+				imagecopyresized($dstim, $srcim, 0,0,0,$begin_point[1],$srcsize[0],$end_point[1]-$begin_point[1],$srcsize[0],$end_point[1]-$begin_point[1]);
+
+				imagepng($dstim,'fonts2/'.time().random_int(1, 50000).'.png');
 				$begin_set = $end_set = false;
 			}
 		}
