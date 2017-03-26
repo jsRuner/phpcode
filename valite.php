@@ -2,19 +2,17 @@
 class valite
 {
 	protected $ImagePath;
-	protected $ImageName;
 	protected $ImageSize;
 	protected $ImageMinValue; //阀值。字体色的总和
 	protected $BlackImagePath; //黑白图片路径
 	protected $FontArray1; //竖切字体路径数组
 	protected $FontArray2; //横切字体路径数组
 
-	protected $Fonts; //兑换以后的数组。
+	protected $Fonts; //识别的字符数组。
 
 	public function __construct()
 	{
 		$this->ImagePath = '';
-		$this->ImageName = '';
 		$this->ImageSize = '';
 		$this->ImageMinValue = '';
 		$this->BlackImagePath = '';
@@ -30,8 +28,6 @@ class valite
 
 	public function getFonts()
 	{
-		# code...
-		// var_dump($this->Fonts);
 		echo implode(',',$this->Fonts);
 		echo "\r\n";
 	}
@@ -99,10 +95,8 @@ class valite
 		$this->cutFont1();
 
 		foreach ($this->FontArray1 as $fontpath) {
-			# code...
 			$this->cutFont2($fontpath);
 		}
-		# code...
 	}
 
 	//图片切割。竖切。不横切。
@@ -226,25 +220,18 @@ class valite
 	public function font2num()
 	{	
 		$fontlibs = '0123456789abcdefghijklmnopqrstuvwxyz';
-		# code...
 		foreach ($this->FontArray2 as $currentCodeFont) {
-			$nums = []; //字符作为索引。差异作为值。
-			# code...
+			$nums = [];
 			for ($i=0; $i < strlen($fontlibs); $i++) { 
-				# code...
-				# 获取与这个字符对比的最小值是多少。
 				$fonts = scandir('fontslib/'.$fontlibs[$i]);
 
-				$temps = []; //存储多个值。
+				$temps = []; //某个字符的不同模型的差值数组。
 				foreach ($fonts as $font) {
-					# code...
 					if (strstr($font, 'png')) {
-						# code...
 						$temps[] = $this->diffPointNum('fontslib/'.$fontlibs[$i].'/'.$font,$currentCodeFont);
 					}
 				}
 				if (empty($temps)) {
-					# code...
 					continue;
 				}else{
 					//进行排序。
@@ -253,55 +240,51 @@ class valite
 					$nums[$fontlibs[$i]] = $mintemp;
 				}
 			}
-
-			//确定当前的字符是多少。
 			asort($nums,SORT_NUMERIC);
 			$this->Fonts[] = array_keys($nums)[0];
 		}
 	}
 
-	//2个图片是否相同。对比像素有多少不同。数量最小的。则视为是这个字符。
-	//返回不同的像素的数量。一个是切换的字体，一个是字体库。
+	//2个图片是否相同。对比像素有多少不同
+	//返回不同的像素的数量。
+	//第一个参数是字体库的字符模型
+	//第二个参数是当前验证码切割的字符。
 	public function diffPointNum($dstimg,$srcimg)
 	{
 		$count = 0 ; 
 		# code...
 		$dstim = imagecreatefrompng($dstimg);
-		$dstsize = getimagesize($dstimg); //0是宽 1是高
+		$dstsize = getimagesize($dstimg); 
 
 		$srcim = imagecreatefrompng($srcimg);
-		$srcsize = getimagesize($srcimg); //0是宽 1是高
+		$srcsize = getimagesize($srcimg); 
 
-		//先取最小的宽度与高度
-		$width = $dstsize[0];
-		$height = $dstsize[1];
+		//先取最小的宽度与高度。
+		$width = $srcsize[0];
+		$height = $srcsize[1];
 
-		if ($width >= $srcsize[0]) {
-			# code...
-			$width = $srcsize[0];
-		}
-
-		if ($height >= $srcsize[1]) {
-			# code...
-			$height = $srcsize[1];
-		}
 
 		//遍历
 		for ($i=0; $i < $width; $i++) { 
 			# code...
-			for ($j=0; $j < $height; $j++) { 
-				# code...
-				$dstrgb = imagecolorat($dstim,$i,$j);
-				$dstrgbarray = imagecolorsforindex($dstim, $dstrgb);
+			for ($j=0; $j < $height; $j++) {
 
-				$srcrgb = imagecolorat($srcim,$i,$j);
-				$srcrgbarray = imagecolorsforindex($dstim, $srcrgb);
+				//切割字符超出的部分。
+				if ($i >= $dstsize[0] || $j >= $dstsize[1]) {
+				 	# code...
+				 	$count++;
+				 }else{
+					$dstrgb = imagecolorat($dstim,$i,$j);
+					$dstrgbarray = imagecolorsforindex($dstim, $dstrgb);
 
-				if ($dstrgbarray != $srcrgbarray) {
-					# code...
-					$count++;
-				}
-				
+					$srcrgb = imagecolorat($srcim,$i,$j);
+					$srcrgbarray = imagecolorsforindex($dstim, $srcrgb);
+
+					if ($dstrgbarray != $srcrgbarray) {
+						# code...
+						$count++;
+					}
+				 }
 			}
 		}
 		return $count;
