@@ -3,6 +3,7 @@
 include 'valite.php';
 include 'utils.php';
 
+error_reporting(0);
 //获取100个验证码图片。
 // for ($i=0; $i < 100; $i++) {
 // 	$filename = 'codes/'.$i.'.png';

@@ -146,7 +146,7 @@ class valite
 				$colBG = imagecolorallocate($dstim, 255, 255, 255);//白色背景
 				imagefill( $dstim, 0, 0, $colBG );//加白色背景
 				imagecopyresized($dstim, $srcim, 0,0, $begin_point[0], 0,$end_point[0]-$begin_point[0],$srcsize[1],$end_point[0]-$begin_point[0],$srcsize[1]);
-				$font = 'fonts/'.time().random_int(1, 50000).'.png';
+				$font = 'fonts/'.time().rand(1, 50000).'.png';
 				imagepng($dstim,$font);
 				$begin_set = $end_set = false;
 				$begin_point = $end_point = [0,0];
@@ -207,7 +207,7 @@ class valite
 				imagefill( $dstim, 0, 0, $colBG );//加白色背景
 
 				imagecopyresized($dstim, $srcim, 0,0,0,$begin_point[1],$srcsize[0],$end_point[1]-$begin_point[1],$srcsize[0],$end_point[1]-$begin_point[1]);
-				$font = 'fonts2/'.time().random_int(1, 50000).'.png';
+				$font = 'fonts2/'.time().rand(1, 50000).'.png';
 				imagepng($dstim,$font);
 				$begin_set = $end_set = false;
 				$begin_point = $end_point = [0,0];
